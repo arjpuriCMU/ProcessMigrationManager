@@ -4,6 +4,10 @@ import java.io.Serializable;
 
 public abstract class MigratableProcess implements Runnable, Serializable{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 3297922993842510729L;
 	protected boolean running;
 	protected boolean suspended;
 	protected boolean complete;
@@ -35,9 +39,6 @@ public abstract class MigratableProcess implements Runnable, Serializable{
 	
 	@Override
 	public abstract void run();
-	
-	
-	
 	
 	
 
