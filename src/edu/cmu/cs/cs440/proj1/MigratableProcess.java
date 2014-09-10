@@ -23,6 +23,10 @@ public abstract class MigratableProcess implements Runnable, Serializable{
 		return pid;
 	}
 	
+	public void setPid(int processId){
+		this.pid = processId;
+	}
+	
 	public boolean isRunning(){
 		return running;
 	}
@@ -39,6 +43,10 @@ public abstract class MigratableProcess implements Runnable, Serializable{
 	
 	@Override
 	public abstract void run();
+
+	public boolean getCompleteValue() {
+		return complete;
+	}
 	
 	
 
