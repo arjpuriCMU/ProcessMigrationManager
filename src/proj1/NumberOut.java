@@ -1,13 +1,16 @@
-import MigratableProcess;
+package proj1;
 
-public class number extends MigratableProcess{
+public class NumberOut extends MigratableProcess{
   
-  private int num = 0;
+  
+	private static final long serialVersionUID = 6663514053767574658L;
+	private int num;
   private TransactionalFileOutputStream outstream;
   
-  public number(String[] args){
-    super(args);
-    outstream = new TransactionalFileOutputStream(args[0]);
+  public NumberOut(String[] args){
+	super(args);
+	this.num = 0;
+   
   }
   
   public void run(){
@@ -15,14 +18,39 @@ public class number extends MigratableProcess{
     this.suspended = false;
     while(!suspended){
       if (num < 20){
-        outstream.write(num.toString() + "\n");
+        System.out.println(num);
       }
-      Thread.sleep(200);
-      
+      else {
+    	  this.complete = true;
+      }
+      try {
+		Thread.sleep(2000);
+	} catch (InterruptedException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+		}
+      num++;
     }
+    suspended = false;
   }
   
   public void suspend(){
+	  this.suspended = true;
+	  while (suspended){
+		  try{
+			  Thread.sleep(4000);
+		  }
+		  catch (InterruptedException e){
+			  e.printStackTrace();
+		  }
+	  }
+	
     
   }
+
+@Override
+public String toString() {
+	// TODO Auto-generated method stub
+	return null;
+}
 }

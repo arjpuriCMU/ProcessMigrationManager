@@ -53,10 +53,14 @@ public class MasterServer implements Runnable {
 	}
 
 	private void initSerDir() throws FileNotFoundException, UnsupportedEncodingException {
-		File dir_loc = new File("dir_loc.txt");
-		PrintWriter writer = new PrintWriter(dir_loc,"UTF-8");
-		writer.write("/Users/arjunpuri/Documents/workspace/MigratableProcesses/src/serialized_processes");
-		writer.close();
+		File ser = new File("serialized_processes");
+		if (!ser.exists()){
+			ser.mkdir();
+		}
+//		File dir_loc = new File("dir_loc.txt");
+//		PrintWriter writer = new PrintWriter(dir_loc,"UTF-8");
+//		writer.write("/serialized_processes");
+//		writer.close();
 	}
 
 	@Override
@@ -135,8 +139,8 @@ public class MasterServer implements Runnable {
 			}
 		}
 		else if (args[0].toLowerCase().equals("processes?")){
-			System.out.println("Processes Running:");
-			for (Integer pId : pid2WorkerID.keySet()){
+			System.out.println("Processes:");
+			for (Integer pId : pid2State.keySet()){
 				System.out.println("pId: " + pId + ", running on Worker #" + pid2WorkerID.get(pId) + 
 						", State: " + pid2State.get(pId));
 			}
@@ -145,19 +149,10 @@ public class MasterServer implements Runnable {
 		else if (args[0].toLowerCase().equals("create")){
 			MigratableProcess process;
 			try {
-				System.out.println(args[1]);
 				@SuppressWarnings("unchecked")
 				Class<MigratableProcess> pClass = (Class<MigratableProcess>) (Class.forName(args[1]));
 				Constructor<MigratableProcess> constructor = (Constructor<MigratableProcess>) (pClass.getConstructor(String[].class));
-				List<String> processArgs = new ArrayList<String>();
-				for (int i = 0; i < args.length; i++){
-					if (i != 0 && i != 1){
-						processArgs.add(args[i]);
-					}
-				}
-				String[] newArgs = new String[args.length - 2];
-				processArgs.toArray(newArgs);
-				process = constructor.newInstance((Object) newArgs);
+				process = constructor.newInstance((Object) args);
 				process.setPid(currPid);
 				ProcessController controller = new ProcessController();
 				controller.serialize(process);
@@ -202,7 +197,6 @@ public class MasterServer implements Runnable {
 						try {
 							workerCommunicator.pushMessageToWorker(msg);
 						} catch (IOException e) {
-							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
 						pid2State.put(pid, State.RUNNING);

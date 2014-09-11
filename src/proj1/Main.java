@@ -27,7 +27,7 @@ public class Main {
 		BufferedWriter mWriter = new BufferedWriter(writer_master);
 		if (args.length == 3){
 			if (args[0].toLowerCase().equals("-w")){
-				if (line.length() == 0){
+				if (line != null && line.length() == 0){
 					System.out.println("Must run the master server first!");
 				} 
 				else{

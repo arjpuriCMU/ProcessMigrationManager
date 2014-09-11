@@ -25,16 +25,17 @@ public class ProcessController {
 		
 	}
 
-	public MigratableProcess desrialize(int pId){
-		System.out.println("Deserializing process" + pId);
+	public MigratableProcess deserialize(int pId){
+		System.out.println("Deserializing process " + pId);
 		FileInputStream inputFile;
 		try {
-			inputFile = new FileInputStream(serDirectory + "/" + pId + ".ser");
+			inputFile = new FileInputStream("serialized_processes" + "/" + pId + ".ser");
 			ObjectInputStream input = new ObjectInputStream(inputFile);
 			MigratableProcess process = (MigratableProcess) input.readObject();
 			input.close();
 			new File(serDirectory + "/" + pId + ".ser").delete();
 			System.out.println("Process deserialized and ready to run...");
+			return process;
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -52,13 +53,11 @@ public class ProcessController {
 	}
 	
 	public void serialize(MigratableProcess process) {
-		System.out.println("Serializing process" + process.getPid());
-		File test = new File(serDirectory + "/" + process.toString()+ process.getPid() + ".ser");
-		try {	
-			if (test.exists()){
-				test.delete();	
-			}
-			FileOutputStream serFile = new FileOutputStream(serDirectory + "/" + process.getPid() + ".ser");
+		System.out.println("Serializing process " + process.getPid());
+		File test = new File("serialized_processes" + "/" + process.toString()+ process.getPid() + ".ser");
+		try {
+			test.delete();
+			FileOutputStream serFile = new FileOutputStream("serialized_processes" + "/" + process.getPid() + ".ser");
 			ObjectOutputStream output = new ObjectOutputStream(serFile);
 			output.writeObject(process);
 			output.flush();

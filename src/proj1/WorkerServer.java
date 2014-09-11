@@ -18,7 +18,7 @@ public class WorkerServer {
 	private String master_host;
 	private Socket wSocket;
 	private int portNumber;
-	private Map<Integer,MigratableProcess> pId2Process;
+	private ConcurrentHashMap<Integer,MigratableProcess> pId2Process;
 	private List<Integer> processes;
 	private ObjectOutputStream output;
 	private ObjectInputStream input;
@@ -78,7 +78,7 @@ public class WorkerServer {
 				}
 				else if (msg.getState().equals(State.START)){
 					processes.add(msg.getPId());
-					MigratableProcess deProcess = controlCenter.desrialize(msg.getPId());
+					MigratableProcess deProcess = controlCenter.deserialize(msg.getPId());
 					Thread processThread = new Thread(deProcess);
 					processThread.start();
 					this.pId2Process.put(msg.getPId(), deProcess);
@@ -151,5 +151,6 @@ class WorkerHelper implements Runnable{
 				e.printStackTrace();
 			}
 		}
+		
 	}
 }
