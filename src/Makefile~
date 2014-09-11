@@ -1,0 +1,42 @@
+JFLAGS =
+JC = javac
+.SUFFIXES: .java .class
+.java.class:
+	$(JC) $(JFLAGS) $*.java
+
+CLASSES = \
+	GrepProcess.java \
+	m2wMessage.java \
+	Main.java \
+	MasterServer.java \
+	MigratableProcess.java \
+	ProcessController.java \
+	State.java \
+	TransactionalFileInputStream.java \
+	TransactionalFileOutputStream.java \
+	w2mMessage.java \
+	WorkerHealthChecker.java \
+	WorkerServer.java \
+
+RMCLASSES = \
+	GrepProcess.class \
+	m2wMessage.class \
+	Main.class \
+	MasterServer.class \
+	MigratableProcess.class \
+	ProcessController.class \
+	State.class \
+	TransactionalFileInputStream.class \
+	TransactionalFileOutputStream.class \
+	w2mMessage.class \
+	WorkerHealthChecker.class \
+	WorkerServer.class \
+
+
+default: classes
+
+classes: $(CLASSES:.java=.class)
+
+clean:	
+	rm $(RMCLASSES)
+	
