@@ -54,9 +54,9 @@ public class MasterServer implements Runnable {
 
 	private void initSerDir() throws FileNotFoundException, UnsupportedEncodingException {
 		File ser = new File("serialized_processes");
-		if (!ser.exists()){
-			ser.mkdir();
-		}
+		ser.delete();
+		ser.mkdir();
+		
 //		File dir_loc = new File("dir_loc.txt");
 //		PrintWriter writer = new PrintWriter(dir_loc,"UTF-8");
 //		writer.write("/serialized_processes");
@@ -218,31 +218,37 @@ public class MasterServer implements Runnable {
 		}
 		
 		else if (args[0].toLowerCase().equals("suspend")){
-			int pid = Integer.parseInt(args[1]);
-			if (pid2State.get(pid) != null){
-				if (pid2State.get(pid).equals(State.RUNNING)){
-					m2wMessage msg = new m2wMessage(pid,State.TOSUSPEND);
-					Communicator communicator = wId2Communication.get(pid2WorkerID.get(pid));
-					try {
-						communicator.pushMessageToWorker(msg);
-					} catch (IOException e) {
-						e.printStackTrace();
+			if (args.length == 2){
+				int pid = Integer.parseInt(args[1]);
+				if (pid2State.get(pid) != null){
+					if (pid2State.get(pid).equals(State.RUNNING)){
+						m2wMessage msg = new m2wMessage(pid,State.TOSUSPEND);
+						Communicator communicator = wId2Communication.get(pid2WorkerID.get(pid));
+						try {
+							communicator.pushMessageToWorker(msg);
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+						pid2State.put(pid, State.SUSPENDED);
+						pid2WorkerID.remove(pid);
+						System.out.println("Process has been suspended!");
 					}
-					pid2State.put(pid, State.SUSPENDED);
-					pid2WorkerID.remove(pid);
-					System.out.println("Process has been suspended!");
+					else{
+						System.out.println("Process is already suspended!");
+					}
 				}
 				else{
-					System.out.println("Process is already suspended!");
+					System.out.println("Process does not exist!");
 				}
 			}
+			
 			else{
-				System.out.println("Process does not exist!");
+				System.out.println("Command not recognized. Type 'help' for available commands");
 			}
 		}
-		
 		else{
-			System.out.println("Command not recognized. Type 'help' for available commands");
+			System.out.println("Please enter a process ID");
+			
 		}
 		
 		

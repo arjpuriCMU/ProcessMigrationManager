@@ -17,6 +17,10 @@ public class TransactionalFileOutputStream extends OutputStream implements Seria
 		this.filename = file;
 		this.index = 0;
 	}
+	
+	public int getIndex(){
+		return this.index;
+	}
 	@Override
 	public void write(int b) throws IOException {
 		RandomAccessFile output = new RandomAccessFile(new File(filename), "rws");

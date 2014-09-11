@@ -1,5 +1,6 @@
 package proj1;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -19,7 +20,6 @@ public class WorkerServer {
 	private Socket wSocket;
 	private int portNumber;
 	private ConcurrentHashMap<Integer,MigratableProcess> pId2Process;
-	private List<Integer> processes;
 	private ObjectOutputStream output;
 	private ObjectInputStream input;
 	
@@ -28,7 +28,6 @@ public class WorkerServer {
 		this.portNumber = port;
 		pId2Threads = new ConcurrentHashMap<Integer,Thread>();
 		pId2Process = new ConcurrentHashMap<Integer,MigratableProcess>();
-		processes = new ArrayList<Integer>();
 	}
 	
 	public int getId(){
@@ -50,6 +49,7 @@ public class WorkerServer {
 		ProcessController controlCenter = new ProcessController();
 		WorkerHelper workerHelper = new WorkerHelper(this);
 		Thread helperThread = new Thread(workerHelper);
+		helperThread.start();
 		try {
 			this.wSocket = new Socket(this.master_host,portNumber);
 			System.out.println("Connected to master");
@@ -67,7 +67,6 @@ public class WorkerServer {
 				
 				if (msg.getState().equals(State.TOSUSPEND)){
 					pId2Process.get(msg.getPId()).suspend();
-					processes.remove(msg.getPId());
 					controlCenter.serialize(pId2Process.get(msg.getPId()));
 					
 				}
@@ -77,7 +76,6 @@ public class WorkerServer {
 					System.exit(1);
 				}
 				else if (msg.getState().equals(State.START)){
-					processes.add(msg.getPId());
 					MigratableProcess deProcess = controlCenter.deserialize(msg.getPId());
 					Thread processThread = new Thread(deProcess);
 					processThread.start();
@@ -101,7 +99,7 @@ public class WorkerServer {
 			System.out.println("Worker has been exited!");
 		}
 		
-		helperThread.run();
+		
 		
 	}
 	
@@ -128,6 +126,7 @@ class WorkerHelper implements Runnable{
 	}
 	
 	public void run(){
+		System.out.println("Worker Helper is running");
 		while (true){
 			Map<Integer,MigratableProcess> processes = worker.getPId2Process();
 			for (Integer pId : processes.keySet()){
@@ -135,7 +134,9 @@ class WorkerHelper implements Runnable{
 				if (p.getCompleteValue() == true){
 					worker.getPId2Process().remove(pId);
 					worker.getPId2Threads().remove(pId);
+					new File("serialized_processes" + "/" + pId + ".ser").delete();
 					w2mMessage msg = new w2mMessage(pId,State.DONE);
+					System.out.println("Process done!");
 					try {
 						worker.pushMessageToMaster(msg);
 					} catch (IOException e) {

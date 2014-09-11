@@ -1,28 +1,12 @@
 package proj1;
-
-import java.io.File;
-import java.io.IOException;
-
-public class NumberOut extends MigratableProcess{
-  
-  
-	private static final long serialVersionUID = 6663514053767574658L;
+public class NumberStdOut extends MigratableProcess{
+ 
+	private static final long serialVersionUID = -5085546396792853058L;
 	private int num;
-	private TransactionalFileOutputStream outstream;
   
-  public NumberOut(String[] args){
+  public NumberStdOut(String[] args){
 	super(args);
 	this.num = 0;
-	new File("nums.txt").delete();
-	try {
-		File nums = new File("nums.txt");
-		nums.createNewFile();
-	} catch (IOException e) {
-		System.out.println("file exists");
-		e.printStackTrace();
-	}
-	outstream = new TransactionalFileOutputStream("nums.txt");
-   
   }
   
   public void run(){
@@ -30,14 +14,7 @@ public class NumberOut extends MigratableProcess{
     this.suspended = false;
     while(!suspended){
       if (num < 10){
-        try {
-        	System.out.println(num);
-			outstream.write(num);
-			
-		} catch (IOException e) {
-			System.out.println("Could not write!");
-			e.printStackTrace();
-		}
+    	  System.out.println(num);
       }
       else {
     	  this.complete = true;

@@ -16,6 +16,10 @@ public class TransactionalFileInputStream extends InputStream implements Seriali
 		this.index = 0;
 		
 	}
+	
+	public int getIndex(){
+		return this.index;
+	}
 
 	@Override
 	public int read() throws IOException {

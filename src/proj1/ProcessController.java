@@ -19,6 +19,7 @@ public class ProcessController {
 	
 	public void init() throws IOException{	
 		FileReader fr = new FileReader("dir_loc.txt");
+		@SuppressWarnings("resource")
 		BufferedReader reader = new BufferedReader(fr);	
 		String ser_dir = reader.readLine();
 		this.serDirectory = ser_dir;
@@ -33,7 +34,7 @@ public class ProcessController {
 			ObjectInputStream input = new ObjectInputStream(inputFile);
 			MigratableProcess process = (MigratableProcess) input.readObject();
 			input.close();
-			new File(serDirectory + "/" + pId + ".ser").delete();
+			new File("serialized_process" + "/" + pId + ".ser").delete();
 			System.out.println("Process deserialized and ready to run...");
 			return process;
 		} catch (FileNotFoundException e) {

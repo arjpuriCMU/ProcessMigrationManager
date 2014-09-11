@@ -10,6 +10,9 @@ CLASSES = \
 	proj1/Main.java \
 	proj1/MasterServer.java \
 	proj1/MigratableProcess.java \
+	proj1/NumberIn.java \
+	proj1/NumberOut.java \
+	proj1/NumberStdOut.java \
 	proj1/ProcessController.java \
 	proj1/State.java \
 	proj1/TransactionalFileInputStream.java \
@@ -24,6 +27,9 @@ RMCLASSES = \
 	proj1/Main.class \
 	proj1/MasterServer.class \
 	proj1/MigratableProcess.class \
+	proj1/NumberIn.class \
+	proj1/NumberOut.class \
+	proj1/NumberStdOut.java \
 	proj1/ProcessController.class \
 	proj1/State.class \
 	proj1/TransactionalFileInputStream.class \
