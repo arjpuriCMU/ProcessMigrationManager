@@ -53,14 +53,12 @@ public class MasterServer implements Runnable {
 	}
 
 	private void initSerDir() throws FileNotFoundException, UnsupportedEncodingException {
+		/* Initializes the Serialization directory that will store .ser files
+		 */
 		File ser = new File("serialized_processes");
 		ser.delete();
 		ser.mkdir();
 		
-//		File dir_loc = new File("dir_loc.txt");
-//		PrintWriter writer = new PrintWriter(dir_loc,"UTF-8");
-//		writer.write("/serialized_processes");
-//		writer.close();
 	}
 
 	@Override
@@ -78,6 +76,7 @@ public class MasterServer implements Runnable {
 				usrInput = scanner.nextLine();
 				args = usrInput.split(" ");
 				if (args[0].toLowerCase().equals("quit")){
+					//If user decides to quit, must quit all workers
 					for (int workerId: wId2Communication.keySet()){
 						Communicator comm = wId2Communication.get(workerId);
 						m2wMessage msg = new m2wMessage(-1, State.QUIT); //a -1 pId instructs it to send to all pIds
@@ -116,21 +115,7 @@ public class MasterServer implements Runnable {
 	}
 	
 	public void processCLInput(String[] args) {
-		if (args[0].toLowerCase().equals("ser_dir")){ //attempting to change the serialization directory
-			String dir = args[1];
-			File dir_loc = new File("dir_loc.txt");
-			PrintWriter writer;
-			try {
-				writer = new PrintWriter(dir_loc,"UTF-8");
-				writer.write(dir);
-				writer.close();
-			} catch (FileNotFoundException | UnsupportedEncodingException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-		}
-		else if (args[0].toLowerCase().equals("workers?")){
+		if (args[0].toLowerCase().equals("workers?")){ //Display all running workers
 			System.out.println("Workers Present:");
 			for (Integer wId : wId2Communication.keySet()){
 				String host = wId2Communication.get(wId).getSocket().getLocalAddress().getHostAddress();
@@ -138,7 +123,7 @@ public class MasterServer implements Runnable {
 				System.out.println("Worker #" + wId + " <host: " +host + ">" + " <port: " + port + ">" );
 			}
 		}
-		else if (args[0].toLowerCase().equals("processes?")){
+		else if (args[0].toLowerCase().equals("processes?")){ //Display all processes
 			System.out.println("Processes:");
 			for (Integer pId : pid2State.keySet()){
 				System.out.println("pId: " + pId + ", running on Worker #" + pid2WorkerID.get(pId) + 
@@ -146,14 +131,16 @@ public class MasterServer implements Runnable {
 			}
 		}
 		
-		else if (args[0].toLowerCase().equals("create")){
+		else if (args[0].toLowerCase().equals("create")){//Create a new process
 			MigratableProcess process;
 			try {
+				//Below we use reflectors to get the class of the process attempting to be run
 				@SuppressWarnings("unchecked")
 				Class<MigratableProcess> pClass = (Class<MigratableProcess>) (Class.forName(args[1]));
 				Constructor<MigratableProcess> constructor = (Constructor<MigratableProcess>) (pClass.getConstructor(String[].class));
 				process = constructor.newInstance((Object) args);
 				process.setPid(currPid);
+				//ProcessController manages serialization and deserialization
 				ProcessController controller = new ProcessController();
 				controller.serialize(process);
 				pid2State.put(currPid, State.SUSPENDED);
@@ -178,9 +165,6 @@ public class MasterServer implements Runnable {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (InvocationTargetException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
@@ -250,11 +234,6 @@ public class MasterServer implements Runnable {
 			System.out.println("Please enter a process ID");
 			
 		}
-		
-		
-		
-		
-		
 	}
 
 	public int getPort(){
@@ -264,7 +243,6 @@ public class MasterServer implements Runnable {
 	private void displayHelp() {
 		System.out.println("General:");
 		System.out.println("'quit' to exit the entire system.");
-		System.out.println("'ser_der <directory>' to set the serialization drectory to <directory>");
 		System.out.println("Status:");
 		System.out.println("'workers?' to display all running workers");
 		System.out.println("'processes?' to display all running workers");
@@ -303,6 +281,8 @@ public class MasterServer implements Runnable {
 } 
 
 class Connector implements Runnable {
+	/*Listens for incoming connections from worker servers
+	 */
 	private MasterServer master;
 	private ServerSocket server_socket;
 	private Socket socket;
@@ -323,7 +303,6 @@ class Connector implements Runnable {
 		return socket;
 	}
 
-	@SuppressWarnings("resource")
 	@Override
 	public void run() {
 		int currWorkerID = master.getId2SocketMap().size();
@@ -334,8 +313,8 @@ class Connector implements Runnable {
 				System.out.println("Server socket opened on port: " + server_socket.getLocalPort());
 				System.out.print("Master -> ");
 				System.out.println("Worker #" + currWorkerID + " running");
-				master.addWorker(currWorkerID);
-				master.getId2SocketMap().put(currWorkerID,socket);
+				master.addWorker(currWorkerID); //store the worker
+				master.getId2SocketMap().put(currWorkerID,socket); //Cache the socket for later use
 				Communicator comm = new Communicator(master,currWorkerID);
 				Thread th = new Thread(comm);
 				master.getCommunicatorMap().put(currWorkerID, comm);
@@ -357,6 +336,8 @@ class Connector implements Runnable {
 	
 }
 class Communicator implements Runnable{
+	/* Each worker has its own communicator to allow transfer of messages
+	 */
 	private Socket socket;
 	private MasterServer master;
 	private int wId;
@@ -414,13 +395,7 @@ class Communicator implements Runnable{
 		if (output == null){
 			output = new ObjectOutputStream(socket.getOutputStream());
 		}
-//		try {
 		output.writeObject(msg);
 		output.flush();
-//		} 
-//		catch (IOException e) {
-//			e.printStackTrace();
-//			System.out.print("Message failed to send to: pId- " + msg.getPId() + " State- " + msg.getState());
-//		}	
 	}
 }

@@ -29,7 +29,7 @@ RMCLASSES = \
 	proj1/MigratableProcess.class \
 	proj1/NumberIn.class \
 	proj1/NumberOut.class \
-	proj1/NumberStdOut.java \
+	proj1/NumberStdOut.class \
 	proj1/ProcessController.class \
 	proj1/State.class \
 	proj1/TransactionalFileInputStream.class \

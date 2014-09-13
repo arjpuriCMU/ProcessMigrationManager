@@ -31,7 +31,7 @@ public class NumberOut extends MigratableProcess{
     while(!suspended){
       if (num < 10){
         try {
-        	System.out.println(num);
+        	System.out.println("Wrote " + num + " to file");
 			outstream.write(num);
 			
 		} catch (IOException e) {

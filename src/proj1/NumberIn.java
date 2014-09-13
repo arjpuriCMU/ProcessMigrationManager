@@ -46,8 +46,7 @@ public class NumberIn extends MigratableProcess {
 		    		break;
 		    	}
 				else{
-					System.out.print("i:" + this.i + "\n");
-					System.out.print(val);
+					System.out.println("Value read from file: " + val );
 //					System.out.print(", i:" + this.i + ", inputI:" + this.inputstream.getIndex() + "\n");
 					this.i++;
 				}

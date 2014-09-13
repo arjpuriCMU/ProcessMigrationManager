@@ -12,19 +12,7 @@ import java.io.ObjectOutputStream;
 
 public class ProcessController {
 	String serDirectory;
-	
-	public ProcessController() throws IOException{
-		init();
-	}
-	
-	public void init() throws IOException{	
-		FileReader fr = new FileReader("dir_loc.txt");
-		@SuppressWarnings("resource")
-		BufferedReader reader = new BufferedReader(fr);	
-		String ser_dir = reader.readLine();
-		this.serDirectory = ser_dir;
-		
-	}
+
 
 	public MigratableProcess deserialize(int pId){
 		System.out.println("Deserializing process " + pId);
